@@ -1,0 +1,57 @@
+# Ingestion dans le cluster : un pod telecharge la source epinglee (sha256 verifie),
+# extrait le sous-ensemble brut puis le depose en couche bronze.
+# Prerequis (cf. README, section Kubernetes) :
+#   bash k8s/create-config.sh   (ConfigMap du script + ConfigMap S3 + Secret des identifiants)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: rappro-ingest-bronze
+  labels: {app: rapprochement, group: gr05, step: ingest}
+spec:
+  backoffLimit: 2
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels: {app: rapprochement, step: ingest}
+    spec:
+      restartPolicy: Never
+      initContainers:
+        - name: extract
+          image: python:3.12-slim
+          command: ["python3", "/code/extract_berka.py", "--out", "/data/bronze"]
+          resources:
+            requests: {cpu: 100m, memory: 256Mi}
+            limits: {cpu: 500m, memory: 512Mi}
+          volumeMounts:
+            - {name: code, mountPath: /code, readOnly: true}
+            - {name: data, mountPath: /data}
+      containers:
+        - name: upload
+          image: amazon/aws-cli:2.42.1
+          command: ["sh", "-c"]
+          args:
+            - |
+              set -e
+              # SeaweedFS : adressage path-style, pas de "_" dans les clés de métadonnées
+              # (le proxy supprime ces en-têtes, la signature ne correspond plus)
+              aws configure set default.s3.addressing_style path
+              export AWS_REQUEST_CHECKSUM_CALCULATION=when_required AWS_RESPONSE_CHECKSUM_VALIDATION=when_required
+              for f in /data/bronze/*; do
+                sum=$(sha256sum "$f" | cut -d' ' -f1)
+                aws s3 cp "$f" "s3://$LAB_BUCKET_NAME/gr05/rapprochement/bronze/$(basename "$f")" \
+                  --metadata "source=jlacko/berka-dataset,commit=77e9972a1ead107e5f42a91dd989d587bff055a4,sha256=$sum,loadedby=job-$HOSTNAME"
+              done
+              aws s3 ls "s3://$LAB_BUCKET_NAME/gr05/rapprochement/bronze/" --summarize --human-readable
+          envFrom:
+            - configMapRef: {name: rappro-s3-config}
+            - secretRef: {name: rappro-s3-credentials}
+          resources:
+            requests: {cpu: 100m, memory: 128Mi}
+            limits: {cpu: 500m, memory: 256Mi}
+          volumeMounts:
+            - {name: data, mountPath: /data, readOnly: true}
+      volumes:
+        - name: code
+          configMap: {name: rappro-ingest-code}
+        - name: data
+          emptyDir: {sizeLimit: 200Mi}
