@@ -1,0 +1,10 @@
+[project]
+name = "bigdata-project-rapprochement"
+version = "0.1.0"
+description = "Rapprochement bancaire automatique sur le jeu Berka (PKDD'99) - Gr05"
+requires-python = ">=3.11"
+dependencies = [
+    "dbt-core>=1.10,<2",
+    "dbt-duckdb>=1.10,<2",
+    "duckdb>=1.3,<2",
+]

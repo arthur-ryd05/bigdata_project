@@ -1,0 +1,18 @@
+# donnees : jamais dans Git, elles vivent sur S3 (bronze/silver/gold)
+data/
+*.csv
+*.asc
+*.parquet
+*.duckdb
+*.duckdb.wal
+# dbt
+src/rapprochement/target/
+src/rapprochement/dbt_packages/
+src/rapprochement/logs/
+logs/
+# python
+.venv/
+__pycache__/
+# secrets
+*.env
+s3.env
