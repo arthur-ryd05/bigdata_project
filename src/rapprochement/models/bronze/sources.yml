@@ -1,0 +1,21 @@
+sources:
+  - name: bronze
+    description: >
+      Fichiers bruts du jeu Berka (PKDD'99) deposes par src/ingestion/extract_berka.py :
+      order, account et loan sont copies tels quels ; trans est un sous-ensemble de lignes
+      (virements emis, juillet-decembre 1998) dont les octets sont inchanges.
+      Separateur ';', fins de ligne CRLF, tout lu en texte.
+    config:
+      meta:
+        external_location: >-
+          read_csv('{{ env_var("LAKE_ROOT") }}/bronze/{name}.asc',
+                   delim = ';', quote = '"', header = true, all_varchar = true)
+    tables:
+      - name: order
+        description: Ordres de virement permanents (journal des paiements attendus), un par ligne.
+      - name: trans
+        description: Releve bancaire, virements emis vers une autre banque, juillet-decembre 1998.
+      - name: account
+        description: Comptes clients (date d'ouverture, frequence des releves).
+      - name: loan
+        description: Prets (date, duree en mois, mensualite, statut).

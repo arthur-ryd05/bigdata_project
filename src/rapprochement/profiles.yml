@@ -1,0 +1,12 @@
+# Aucun secret ici : sur Onyxia, DuckDB lit les identifiants S3 dans le secret
+# persistant s3_onyxia_connection (cf. lab DuckDB). Hors Onyxia, voir README.
+rapprochement:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: rapprochement.duckdb
+      threads: 4
+      extensions: [httpfs]
+      settings:
+        TimeZone: UTC
