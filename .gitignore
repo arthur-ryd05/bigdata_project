@@ -16,3 +16,4 @@ __pycache__/
 # secrets
 *.env
 s3.env
+src/rapprochement/.user.yml

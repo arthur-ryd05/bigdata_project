@@ -1,0 +1,41 @@
+models:
+  - name: stg_orders
+    description: Ordres permanents types et normalises.
+    columns:
+      - name: order_id
+        data_tests: [unique, not_null]
+      - name: account_id
+        data_tests:
+          - not_null
+          - relationships: {arguments: {to: ref('stg_accounts'), field: account_id}}
+      - name: account_to
+        data_tests: [not_null]
+      - name: amount
+        data_tests: [not_null]
+      - name: payment_type
+        data_tests:
+          - accepted_values:
+              arguments: {values: [household, loan, insurance, leasing, unspecified]}
+  - name: stg_transfers
+    description: Virements emis du releve, types et normalises.
+    columns:
+      - name: trans_id
+        data_tests: [unique, not_null]
+      - name: account_id
+        data_tests:
+          - not_null
+          - relationships: {arguments: {to: ref('stg_accounts'), field: account_id}}
+      - name: trans_date
+        data_tests: [not_null]
+      - name: amount
+        data_tests: [not_null]
+  - name: stg_accounts
+    columns:
+      - name: account_id
+        data_tests: [unique, not_null]
+  - name: stg_loans
+    columns:
+      - name: loan_id
+        data_tests: [unique, not_null]
+      - name: account_id
+        data_tests: [unique, not_null]
