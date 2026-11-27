@@ -2,7 +2,7 @@
 
 **Auteurs** : REYNAUD Arthur, VAZ-SAMPAIO-DESTOT Léo
 
-**Prérequis** : service Onyxia `vscode-pyspark` (DuckDB CLI, AWS CLI, `kubectl`), [uv](https://docs.astral.sh/uv/), profil S3 Onyxia configuré (onglet *Mon compte › Connexion au stockage*), secret DuckDB `s3_onyxia_connection` valide. Python ≥ 3.11 et `dbt-duckdb` sont installés par `uv sync`.
+**Prérequis** : un service `vscode-pyspark` lancé sur Onyxia, qui fournit déjà AWS CLI, DuckDB et `kubectl`. Les dépendances Python (dont `dbt-duckdb`) s'installent avec `uv sync`. Pour l'accès au stockage, on colle dans le terminal le script « AWS CLI » de la page S3 d'Onyxia, puis on crée le secret DuckDB `s3_onyxia_connection` comme dans le lab DuckDB. Les clés expirent au bout de quelques heures : il faut alors recoller le script.
 
 **Dataset** : *Berka Financial Dataset* (PKDD'99 Discovery Challenge). Ce sont les vraies données anonymisées d'une banque tchèque, 1993-1998.
 - Source : <https://github.com/jlacko/berka-dataset>, commit `77e9972`. Sommes sha256 vérifiées par le script. Dataset décrit sur <https://relational.fel.cvut.cz/dataset/Financial>.
