@@ -14,7 +14,9 @@ vars:
 
 models:
   rapprochement:
-    # Silver (puis gold) est ecrit en Parquet sur S3 (materialisation external de dbt-duckdb) :
+    # Silver et gold sont ecrits en Parquet sur S3 (materialisation external de dbt-duckdb) :
     # chaque modele fixe son chemin avec la macro lake_path().
     silver:
+      +materialized: external
+    gold:
       +materialized: external
